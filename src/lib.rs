@@ -7,12 +7,7 @@ pub mod input;
 pub mod pixel;
 
 use bevy_trait_query::One;
-use valence::entity::display::Scale;
-use valence::entity::text_display;
-use valence::entity::text_display::Background;
-use valence::entity::text_display::LineWidth;
 use valence::entity::text_display::TextDisplayEntityBundle;
-use valence::entity::text_display::TextDisplayFlags;
 use valence::prelude::*;
 
 #[cfg(feature = "input")]
@@ -92,7 +87,7 @@ impl Plugin for ScreenPlugin {
     }
 }
 
-/// Function to spawn screen
+// Function to spawn screen
 #[allow(clippy::too_many_arguments)]
 pub fn build_screen(
     commands: &mut Commands,
@@ -107,31 +102,7 @@ pub fn build_screen(
     pixel_size: u32,
     // whether you want to spawn foreground entities, you may want to use it to reduce amount of entities to 2/3
     enable_fg: bool,
-    manager: impl GameManager + Component,
-) -> Entity {
-    build_screen_with_yaw(
-        commands, layer_id, position, width, height, pixel_size, enable_fg, manager, 0.,
-    )
-}
-
-/// Function to spawn screen with rotation
-/// See the documentation of [`Look`]
-#[allow(clippy::too_many_arguments)]
-pub fn build_screen_with_yaw(
-    commands: &mut Commands,
-    // layer to spawn screen on
-    layer_id: EntityLayerId,
-    // position on the left bottom(not sure) corner
-    position: Position,
-    // size in screen pixels
-    width: u32,
-    height: u32,
-    // screen pixel size
-    pixel_size: u32,
-    // whether you want to spawn foreground entities, you may want to use it to reduce amount of entities to 2/3
-    enable_fg: bool,
     mut manager: impl GameManager + Component,
-    yaw: f32,
 ) -> Entity {
     let pixel_bg_scale: f32 = 4.0 / pixel_size as f32;
     let pixel_offset: f64 = 0.125 * pixel_bg_scale as f64;
@@ -201,13 +172,14 @@ pub fn build_screen_with_yaw(
             let part = commands
                 .spawn((
                     TextDisplayEntityBundle {
-                        display_scale: Scale(
+                        display_scale: valence::entity::display::Scale(
                             [pixel_fg_scale, pixel_fg_scale, pixel_fg_scale].into(),
                         ),
-                        text_display_background: Background(0),
-                        text_display_text_display_flags: TextDisplayFlags(0b1000),
-                        text_display_line_width: LineWidth(1),
-                        text_display_text: text_display::Text(result),
+                        text_display_background: valence::entity::text_display::Background(0),
+                        text_display_text_display_flags:
+                            valence::entity::text_display::TextDisplayFlags(0b1000),
+                        text_display_line_width: valence::entity::text_display::LineWidth(1),
+                        text_display_text: valence::entity::text_display::Text(result),
                         layer: layer_id,
                         position: Position::new([
                             // magic numbers so it doesnt look weird
@@ -219,7 +191,6 @@ pub fn build_screen_with_yaw(
                             // fix z-fighting (if any)
                             position.0[2] + 0.001,
                         ]),
-                        look: Look { yaw, pitch: 0. },
                         ..Default::default()
                     },
                     part,
